@@ -63,7 +63,7 @@ IniParser::LineProperties IniParser::parseLine(std::string line) {
 
 					// Trim and lowercase the section
 					StringUtils::trim(result.section);
-					StringUtils::toLowerCase(result.section);
+					StringUtils::toLowercase(result.section);
 
 					result.type = LineType::SECTION;
 
@@ -77,7 +77,7 @@ IniParser::LineProperties IniParser::parseLine(std::string line) {
 				if (lastKeyChar < line.size()) {
 
 					result.name = line.substr(0, lastKeyChar);
-					StringUtils::toLowerCase(result.name);
+					StringUtils::toLowercase(result.name);
 					StringUtils::trim(result.name);
 
 					result.value = line.substr(lastKeyChar + 1, line.size() - 1);

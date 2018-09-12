@@ -7,7 +7,7 @@
 namespace StringUtils {
 	void trim(std::string&);
 
-	void toLowerCase(std::string&);
+	void toLowercase(std::string&);
 }
 
 #endif //INI_EDITOR_STRINGUTILS_H

@@ -11,7 +11,7 @@ namespace StringUtils {
 		}).base(), s.end());
 	}
 
-	void toLowerCase(std::string& s) {
+	void toLowercase(std::string& s) {
 		std::transform(s.begin(), s.end(), s.begin(), tolower);
 	}
 }
