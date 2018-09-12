@@ -22,6 +22,10 @@ void IniParser::parse(std::istream& in, IniParser::NewlineCallback& callback) {
 
 			lineNumber++;
 		}
+
+		// Check if eof has been reached
+		if(!in.bad() && in.eof())
+			callback.onNewline(LineType::END, "", "", "", "");
 	}
 	catch (const std::runtime_error& e) {
 		throw ParseException(e.what(), lineNumber);

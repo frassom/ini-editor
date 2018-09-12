@@ -9,7 +9,8 @@
 enum class LineType {
 	COMMENT,
 	SECTION,
-	KEY
+	KEY,
+	END
 };
 
 class IniParser {

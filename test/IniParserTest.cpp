@@ -8,12 +8,14 @@ public:
 
 	void onNewline(const LineType& type, const std::string& section, const std::string& name,
 				   const std::string& value, const std::string& raw) override {
-		this->type = type;
-		this->section = section;
-		this->name = name;
-		this->value = value;
-		this->raw = raw;
-		timeCalled++;
+		if(type != LineType::END) {
+			this->type = type;
+			this->section = section;
+			this->name = name;
+			this->value = value;
+			this->raw = raw;
+			timeCalled++;
+		}
 	}
 
 	LineType type;
