@@ -83,3 +83,15 @@ TEST(IniEditorTest, tryRemoveNonExistingKey) {
 
 	EXPECT_FALSE(editor.remove("wrong_section", "wrong_name"));
 }
+
+TEST(IniEditorTest, tryInsertingInvalidName) {
+	IniEditor editor;
+
+	EXPECT_THROW(editor.set("section", "nam=e", "value"), std::runtime_error);
+}
+
+TEST(IniEditorTest, tryInsertingInvalidSection) {
+	IniEditor editor;
+
+	EXPECT_THROW(editor.set("sect]ion", "name", "value"), std::runtime_error);
+}
