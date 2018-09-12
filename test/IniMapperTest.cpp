@@ -32,12 +32,20 @@ TEST(IniMapperTest, propertyValue) {
 	ss << "	\t name1  =\tvalue1  \n";
 
 	EXPECT_NO_THROW(map = mapper.fromStream(ss));
-	auto it = map.find("name1=section");
+	auto it = map.find("section]name1");
 
 	EXPECT_TRUE(it != map.end());
 	EXPECT_EQ(it->second, "value1");
 }
 
 TEST(IniMapperTest, makeKey) {
-	EXPECT_EQ(IniMapper::makeKey("section", "name"), "name=section");
+	EXPECT_EQ(IniMapper::makeKey("section", "name"), "section]name");
+}
+
+TEST(IniMapperTest, getNameFromKey) {
+	EXPECT_EQ(IniMapper::getName("section]name"), "name");
+}
+
+TEST(IniMapperTest, getSectionFromKey) {
+	EXPECT_EQ(IniMapper::getSection("section]name"), "section");
 }

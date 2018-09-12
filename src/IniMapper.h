@@ -11,7 +11,11 @@ public:
 
 	std::map<std::string, std::string> fromStream(std::istream& in);
 
-	inline static std::string makeKey(const std::string& section, const std::string& name);
+	static std::string makeKey(const std::string& section, const std::string& name);
+
+	static std::string getName(const std::string& key);
+
+	static std::string getSection(const std::string& key);
 
 protected:
 	void onNewline(const LineType& type, const std::string& section, const std::string& name, const std::string& value,

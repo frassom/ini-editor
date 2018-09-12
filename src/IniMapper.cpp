@@ -18,5 +18,13 @@ void IniMapper::onNewline(const LineType& type, const std::string& section,
 }
 
 std::string IniMapper::makeKey(const std::string& section, const std::string& name) {
-	return name + '=' + section;
+	return section + ']' + name;
+}
+
+std::string IniMapper::getName(const std::string& key) {
+	return key.substr(key.find(']') + 1, key.size());
+}
+
+std::string IniMapper::getSection(const std::string& key) {
+	return key.substr(0, key.find(']'));
 }
