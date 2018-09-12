@@ -6,6 +6,7 @@
 
 namespace StringUtils {
 	void trim(std::string&);
+
 	void toLowerCase(std::string&);
 }
 
