@@ -1,12 +1,7 @@
 #include "IniMapper.h"
 
-std::map<std::string, std::string> IniMapper::fromFile(const std::string& filename) {
-	IniParser::parseFile(filename, *this);
-	return std::move(mProperties);
-}
-
-std::map<std::string, std::string> IniMapper::fromStream(std::istream& in) {
-	IniParser::parseStream(in, *this);
+IniMap IniMapper::from(std::istream& in) {
+	IniParser::parse(in, *this);
 	return std::move(mProperties);
 }
 

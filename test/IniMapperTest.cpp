@@ -5,7 +5,7 @@
 TEST(IniMapperTest, mapSize) {
 	IniMapper mapper;
 	std::stringstream ss;
-	std::map<std::string, std::string> map;
+	IniMap map;
 
 	ss << "[Section]\n";
 	ss << "name1 = value1\n";
@@ -15,14 +15,14 @@ TEST(IniMapperTest, mapSize) {
 	ss << "[Section2]\n";
 	ss << "name1=value1\n";
 
-	EXPECT_NO_THROW(map = mapper.fromStream(ss));
+	EXPECT_NO_THROW(map = mapper.from(ss));
 	EXPECT_EQ(map.size(), 3);
 }
 
 TEST(IniMapperTest, propertyValue) {
 	IniMapper mapper;
 	std::stringstream ss;
-	std::map<std::string, std::string> map;
+	IniMap map;
 
 	ss << "name0 = value0\n";
 	ss << " # comment\n";
@@ -31,7 +31,7 @@ TEST(IniMapperTest, propertyValue) {
 	ss << "[Section]\n";
 	ss << "	\t name1  =\tvalue1  \n";
 
-	EXPECT_NO_THROW(map = mapper.fromStream(ss));
+	EXPECT_NO_THROW(map = mapper.from(ss));
 	auto it = map.find("section]name1");
 
 	EXPECT_TRUE(it != map.end());

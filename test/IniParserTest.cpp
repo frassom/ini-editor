@@ -35,7 +35,7 @@ TEST(IniParserTest, timesCalledCallback) {
 	ss << "\n";
 	ss << "[Section2]\n";
 	ss << "name1=value1\n";
-	IniParser::parseStream(ss, callback);
+	IniParser::parse(ss, callback);
 
 	EXPECT_EQ(callback.timeCalled, 7);
 }
@@ -45,7 +45,7 @@ TEST(IniParserTest, rightCallbackArgsForKey) {
 	std::stringstream ss;
 
 	ss << "name = value\n";
-	IniParser::parseStream(ss, callback);
+	IniParser::parse(ss, callback);
 
 	EXPECT_EQ(callback.raw, "name = value");
 	EXPECT_EQ(callback.type, LineType::KEY);
@@ -59,7 +59,7 @@ TEST(IniParserTest, rightCallbackArgsForSection) {
 	std::stringstream ss;
 
 	ss << "[SECTION]\n";
-	IniParser::parseStream(ss, callback);
+	IniParser::parse(ss, callback);
 
 	EXPECT_EQ(callback.raw, "[SECTION]");
 	EXPECT_EQ(callback.type, LineType::SECTION);
@@ -73,7 +73,7 @@ TEST(IniParserTest, rightCallbackArgsForComment) {
 	std::stringstream ss;
 
 	ss << "# comment\n";
-	IniParser::parseStream(ss, callback);
+	IniParser::parse(ss, callback);
 
 	EXPECT_EQ(callback.raw, "# comment");
 	EXPECT_EQ(callback.type, LineType::COMMENT);
@@ -95,7 +95,7 @@ TEST(IniParserTest, badSectionParseThrow) {
 
 	EXPECT_THROW({
 					 try {
-						 IniParser::parseStream(ss, callback);
+						 IniParser::parse(ss, callback);
 					 }
 					 catch (const ParseException& e) {
 						 EXPECT_EQ(e.line(), 5);
@@ -117,7 +117,7 @@ TEST(IniParserTest, badKeyParseThrow) {
 
 	EXPECT_THROW({
 					 try {
-						 IniParser::parseStream(ss, callback);
+						 IniParser::parse(ss, callback);
 					 }
 					 catch (const ParseException& e) {
 						 EXPECT_EQ(e.line(), 2);
@@ -132,7 +132,7 @@ TEST(IniParserTest, lowercaseSectionAndNameOnParse) {
 
 	ss << "[Section]\n";
 	ss << "NAME = value";
-	IniParser::parseStream(ss, callback);
+	IniParser::parse(ss, callback);
 
 	EXPECT_EQ(callback.name, "name");
 	EXPECT_EQ(callback.section, "section");

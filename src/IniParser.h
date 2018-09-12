@@ -1,7 +1,7 @@
 #ifndef __INI_EDITOR_INIPARSER_H
 #define __INI_EDITOR_INIPARSER_H
 
-#include <fstream>
+#include "iostream"
 
 #include "StringUtils.h"
 #include "ParseException.h"
@@ -25,9 +25,7 @@ public:
 		std::string value;
 	};
 
-	static void parseFile(const std::string& filename, NewlineCallback& callback);
-
-	static void parseStream(std::istream& in, NewlineCallback& callback);
+	static void parse(std::istream& in, NewlineCallback& callback);
 
 	static LineProperties parseLine(std::string line);
 };
