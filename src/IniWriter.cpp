@@ -4,9 +4,8 @@ void IniWriter::write(const IniMap& properties, std::ostream& output) {
 	writePropertiesToStream(properties, output);
 }
 
-void IniWriter::write(IniMap& properties, std::ostream& output, std::istream& source) {
-	mPendingProperties = std::move(properties);
-	properties.clear();
+void IniWriter::write(const IniMap& properties, std::ostream& output, std::istream& source) {
+	mPendingProperties = properties;
 
 	mOutputStream = &output;
 
@@ -16,11 +15,6 @@ void IniWriter::write(IniMap& properties, std::ostream& output, std::istream& so
 
 	// Write left over properties
 	writePropertiesToStream(mPendingProperties, output);
-
-	// Insert remaining properties
-	mResolvedProperties.insert(mPendingProperties.begin(), mPendingProperties.end());
-
-	properties = std::move(mResolvedProperties);
 }
 
 void IniWriter::writePropertiesToStream(const IniMap& properties, std::ostream& output) {
@@ -30,7 +24,7 @@ void IniWriter::writePropertiesToStream(const IniMap& properties, std::ostream& 
 		currentSection = IniMapper::getSection(item.first);
 		if (currentSection != lastSection) {
 			lastSection = currentSection;
-			output << '[' << currentSection << "]\n";
+			writeSection(currentSection, output);
 		}
 
 		writeProperty(IniMapper::getName(item.first), item.second, output);
@@ -54,8 +48,7 @@ void IniWriter::onNewline(const LineType& type, const std::string& section, cons
 
 					writeProperty(name, it->second, output);
 
-					// No more pending
-					mResolvedProperties[it->first] = std::move(it->second);
+					// No more pending, remove
 					mPendingProperties.erase(it);
 				}
 				else
@@ -77,19 +70,17 @@ void IniWriter::onNewline(const LineType& type, const std::string& section, cons
 					// Write it in the ostream
 					writeProperty(IniMapper::getName(it->first), it->second, output);
 
-					// Insert the value
-					mResolvedProperties.insert(*it);
-
 					it++;
 				}
 
+				// Remove all written properties
 				mPendingProperties.erase(startIt, it);
-
 
 				mLastSection = section;
 
+				// Print out the sec
 				if(type == LineType::SECTION)
-					output << raw << std::endl;
+					writeSection(section, output);
 
 				break;
 			}
@@ -100,4 +91,8 @@ void IniWriter::onNewline(const LineType& type, const std::string& section, cons
 
 void IniWriter::writeProperty(const std::string& name, const std::string& value, std::ostream& output) {
 	output << name << " = " << value << '\n';
+}
+
+void IniWriter::writeSection(const std::string& section, std::ostream& output) {
+	output << '[' << section << "]\n";
 }

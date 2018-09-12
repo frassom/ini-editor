@@ -8,7 +8,7 @@ public:
 	void write(const IniMap& properties, std::ostream& output);
 
 	// properties even if is passed as non-const reference isn't modified
-	void write(IniMap& properties, std::ostream& output, std::istream& source);
+	void write(const IniMap& properties, std::ostream& output, std::istream& source);
 
 protected:
 	void onNewline(const LineType& type, const std::string& section, const std::string& name,
@@ -19,11 +19,12 @@ private:
 
 	void writeProperty(const std::string& name, const std::string& value, std::ostream& output);
 
+	void writeSection(const std::string& section, std::ostream& output);
+
 private:
 	std::ostream* mOutputStream = nullptr;
 
 	IniMap mPendingProperties;
-	IniMap mResolvedProperties;
 
 	std::string mLastSection;
 };
