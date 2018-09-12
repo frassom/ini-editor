@@ -11,7 +11,7 @@ void IniParser::parseFile(const std::string& filename, NewlineCallback& callback
 
 void IniParser::parseStream(std::istream& in, NewlineCallback& callback) {
 
-	int lineNumber = 0;
+	int lineNumber = 1;
 
 	try {
 		std::string line;
@@ -19,7 +19,6 @@ void IniParser::parseStream(std::istream& in, NewlineCallback& callback) {
 		std::string currentSection;
 
 		while (std::getline(in, line)) {
-			lineNumber++;
 
 			LineProperties lineProp = parseLine(line);
 
@@ -30,6 +29,7 @@ void IniParser::parseStream(std::istream& in, NewlineCallback& callback) {
 			callback.onNewline(lineProp.type, lineProp.type != LineType::COMMENT ? currentSection : "",
 							   lineProp.name, lineProp.value, line);
 
+			lineNumber++;
 		}
 	}
 	catch (const std::runtime_error& e) {
@@ -77,6 +77,7 @@ IniParser::LineProperties IniParser::parseLine(std::string line) {
 				if (lastKeyChar < line.size()) {
 
 					result.name = line.substr(0, lastKeyChar);
+					StringUtils::toLowerCase(result.name);
 					StringUtils::trim(result.name);
 
 					result.value = line.substr(lastKeyChar + 1, line.size() - 1);
