@@ -38,7 +38,9 @@ void IniWriter::onNewline(const LineType& type, const std::string& section, cons
 		std::ostream& output = *mOutputStream;
 		switch (type) {
 			case LineType::COMMENT:{
-				output << raw << std::endl;
+				std::string comment = raw;
+				StringUtils::trim(comment);
+				output << comment << std::endl;
 
 				break;
 			}

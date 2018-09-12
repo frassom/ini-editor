@@ -110,10 +110,10 @@ TEST(IniWriterTest, sourceWritePreserveComments) {
 	std::stringstream source, output;
 	std::string result;
 
-	source << "# start\n";
+	source << "  # start \t\n";
 	source << "[section1]\n";
 	source << "name1 = value1\n";
-	source << "\t# comment\n";
+	source << "\t # comment  \n";
 
 	writer.write(properties, output, source);
 	result = output.str();
@@ -121,7 +121,7 @@ TEST(IniWriterTest, sourceWritePreserveComments) {
 	EXPECT_EQ(result, "# start\n"
 					  "[section1]\n"
 					  "name1 = value1\n"
-					  "\t# comment\n");
+					  "# comment\n");
 }
 
 TEST(IniWriterTest, dontModifyReferenceMap) {
