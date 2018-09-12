@@ -7,6 +7,10 @@ set(LIB ini_lib)
 
 add_library(${LIB}
 		src/StringUtils.cpp src/StringUtils.h
-		src/IniParser.cpp src/IniParser.h)
+		src/IniParser.cpp src/IniParser.h
+		src/IniMapper.h src/IniMapper.cpp)
 
 add_subdirectory(test)
+
+add_executable(ini main.cpp)
+target_link_libraries(ini ${LIB})

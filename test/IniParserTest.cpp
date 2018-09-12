@@ -2,7 +2,7 @@
 
 #include "../src/IniParser.h"
 
-class FakeCallback : public NewlineCallback {
+class FakeCallback : public IniParser::NewlineCallback {
 public:
 	FakeCallback() : type(LineType::COMMENT), timeCalled(0) {}
 

@@ -1,6 +1,6 @@
 #include "IniParser.h"
 
-void IniParser::parseFile(const std::string& filename, NewlineCallback& callback) {
+void IniParser::parseFile(const std::string& filename, IniParser::NewlineCallback& callback) {
 	std::ifstream file(filename);
 
 	if (file.is_open())
@@ -9,7 +9,7 @@ void IniParser::parseFile(const std::string& filename, NewlineCallback& callback
 		throw std::runtime_error("Could not open file");
 }
 
-void IniParser::parseStream(std::istream& in, NewlineCallback& callback) {
+void IniParser::parseStream(std::istream& in, IniParser::NewlineCallback& callback) {
 
 	int lineNumber = 1;
 
