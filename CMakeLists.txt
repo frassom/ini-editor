@@ -8,7 +8,8 @@ set(LIB ini_lib)
 add_library(${LIB}
 		src/StringUtils.cpp src/StringUtils.h
 		src/IniParser.cpp src/IniParser.h
-		src/IniMapper.h src/IniMapper.cpp
-		src/IniWriter.cpp src/IniWriter.h)
+		src/IniMapper.cpp src/IniMapper.h
+		src/IniWriter.cpp src/IniWriter.h
+		src/IniEditor.cpp src/IniEditor.h)
 
 add_subdirectory(test)
