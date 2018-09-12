@@ -9,7 +9,7 @@ public:
 
 	const char* what() const noexcept override { return mErrorMsg; }
 
-	int line() { return mErrorLine; }
+	int line() const { return mErrorLine; }
 
 private:
 	const char* mErrorMsg;
