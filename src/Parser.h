@@ -6,30 +6,34 @@
 #include "StringUtils.h"
 #include "ParseException.h"
 
-enum class LineType {
-	COMMENT,
-	SECTION,
-	KEY,
-	END
-};
+namespace ini {
 
-struct LineProperties {
-	LineType type;
+	enum class LineType {
+		COMMENT,
+		SECTION,
+		KEY,
+		END
+	};
 
-	std::string section;
-	std::string name;
-	std::string value;
-};
+	struct LineProperties {
+		LineType type;
 
-class NewlineCallback {
-public:
-	virtual void onNewline(const LineType& type, const std::string& section,
-						   const std::string& name, const std::string& value, const std::string& raw) = 0;
-};
+		std::string section;
+		std::string name;
+		std::string value;
+	};
 
-void parse(std::istream& in, NewlineCallback& callback);
+	class NewlineCallback {
+	public:
+		virtual void onNewline(const LineType& type, const std::string& section,
+							   const std::string& name, const std::string& value, const std::string& raw) = 0;
+	};
 
-LineProperties parseLine(std::string line);
+	void parse(std::istream& in, NewlineCallback& callback);
+
+	LineProperties parseLine(std::string line);
+
+}
 
 
 #endif //__INI_EDITOR_PARSER_H

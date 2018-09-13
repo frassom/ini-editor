@@ -3,20 +3,24 @@
 
 #include <exception>
 
-class ParseException : public std::exception {
-public:
-	ParseException(const char* msg, int line) : mErrorMsg(msg), mErrorLine(line) {}
+namespace ini {
 
-	const char* what() const noexcept override { return mErrorMsg; }
+	class ParseException : public std::exception {
+	public:
+		ParseException(const char* msg, int line) : mErrorMsg(msg), mErrorLine(line) {}
 
-	int line() const { return mErrorLine; }
+		const char* what() const noexcept override { return mErrorMsg; }
 
-	void setLine(int line) { mErrorLine = line; }
+		int line() const { return mErrorLine; }
 
-private:
-	const char* mErrorMsg;
-	int mErrorLine;
-};
+		void setLine(int line) { mErrorLine = line; }
+
+	private:
+		const char* mErrorMsg;
+		int mErrorLine;
+	};
+
+}
 
 
 #endif //INI_EDITOR_PARSEEXCEPTION_H

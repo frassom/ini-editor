@@ -1,10 +1,12 @@
 #include <gtest/gtest.h>
 
-#include "../src/IniWriter.h"
+#include "../src/Writer.h"
+
+using namespace ini;
 
 TEST(IniWriterTest, simpleWrite) {
 	IniMap properties;
-	IniWriter writer;
+	Writer writer;
 	std::stringstream output;
 	std::string result;
 
@@ -24,7 +26,7 @@ TEST(IniWriterTest, simpleWrite) {
 
 TEST(IniWriterTest, sourceWriteAddKey) {
 	IniMap properties;
-	IniWriter writer;
+	Writer writer;
 	std::stringstream source, output;
 	std::string result;
 
@@ -45,7 +47,7 @@ TEST(IniWriterTest, sourceWriteAddKey) {
 
 TEST(IniWriterTest, sourceWriteAddKeyEnd) {
 	IniMap properties;
-	IniWriter writer;
+	Writer writer;
 	std::stringstream source, output;
 	std::string result;
 
@@ -68,7 +70,7 @@ TEST(IniWriterTest, sourceWriteAddKeyEnd) {
 
 TEST(IniWriterTest, sourceWriteAddSection) {
 	IniMap properties;
-	IniWriter writer;
+	Writer writer;
 	std::stringstream source, output;
 	std::string result;
 
@@ -88,7 +90,7 @@ TEST(IniWriterTest, sourceWriteAddSection) {
 
 TEST(IniWriterTest, sourceWriteEditKey) {
 	IniMap properties;
-	IniWriter writer;
+	Writer writer;
 	std::stringstream source, output;
 	std::string result;
 
@@ -106,7 +108,7 @@ TEST(IniWriterTest, sourceWriteEditKey) {
 
 TEST(IniWriterTest, sourceWritePreserveComments) {
 	IniMap properties;
-	IniWriter writer;
+	Writer writer;
 	std::stringstream source, output;
 	std::string result;
 
@@ -126,7 +128,7 @@ TEST(IniWriterTest, sourceWritePreserveComments) {
 
 TEST(IniWriterTest, dontModifyReferenceMap) {
 	IniMap properties;
-	IniWriter writer;
+	Writer writer;
 	std::stringstream output, source;
 	std::string result;
 

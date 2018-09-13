@@ -2,6 +2,8 @@
 
 #include "../src/IniEditor.h"
 
+using namespace ini;
+
 TEST(IniEditorTest, shouldHasKey) {
 	IniEditor editor;
 	std::stringstream ss;

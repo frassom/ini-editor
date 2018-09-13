@@ -2,6 +2,8 @@
 
 #include "../src/Parser.h"
 
+using namespace ini;
+
 class FakeCallback : public NewlineCallback {
 public:
 	FakeCallback() : type(LineType::COMMENT), timeCalled(0) {}

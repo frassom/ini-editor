@@ -1,9 +1,11 @@
 #include <gtest/gtest.h>
 
-#include "../src/IniMapper.h"
+#include "../src/Mapper.h"
+
+using namespace ini;
 
 TEST(IniMapperTest, mapSize) {
-	IniMapper mapper;
+	Mapper mapper;
 	std::stringstream ss;
 	IniMap map;
 
@@ -20,7 +22,7 @@ TEST(IniMapperTest, mapSize) {
 }
 
 TEST(IniMapperTest, propertyValue) {
-	IniMapper mapper;
+	Mapper mapper;
 	std::stringstream ss;
 	IniMap map;
 
@@ -39,13 +41,13 @@ TEST(IniMapperTest, propertyValue) {
 }
 
 TEST(IniMapperTest, makeKey) {
-	EXPECT_EQ(IniMapper::makeKey("section", "name"), "section]name");
+	EXPECT_EQ(Mapper::makeKey("section", "name"), "section]name");
 }
 
 TEST(IniMapperTest, getNameFromKey) {
-	EXPECT_EQ(IniMapper::getName("section]name"), "name");
+	EXPECT_EQ(Mapper::getName("section]name"), "name");
 }
 
 TEST(IniMapperTest, getSectionFromKey) {
-	EXPECT_EQ(IniMapper::getSection("section]name"), "section");
+	EXPECT_EQ(Mapper::getSection("section]name"), "section");
 }

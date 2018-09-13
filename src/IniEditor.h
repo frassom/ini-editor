@@ -3,33 +3,37 @@
 
 #include <fstream>
 
-#include "IniWriter.h"
+#include "Writer.h"
 
-class IniEditor {
-public:
-	void loadFromFile(const std::string& filename);
+namespace ini {
 
-	void loadFromStream(std::istream& in);
+	class IniEditor {
+	public:
+		void loadFromFile(const std::string& filename);
 
-	void saveChangesToFile(const std::string& outputFile);
+		void loadFromStream(std::istream& in);
 
-	void saveToFile(const std::string& outputFilename, const std::string& sourceFilename = "");
+		void saveChangesToFile(const std::string& outputFile);
 
-	void saveToStream(std::ostream& output);
+		void saveToFile(const std::string& outputFilename, const std::string& sourceFilename = "");
 
-	void saveToStream(std::ostream& output, std::istream& source);
+		void saveToStream(std::ostream& output);
 
-	bool get(const std::string& section, const std::string& name, std::string& value);
+		void saveToStream(std::ostream& output, std::istream& source);
 
-	void set(const std::string& section, const std::string& name, const std::string& value);
+		bool get(const std::string& section, const std::string& name, std::string& value);
 
-	bool remove(const std::string& section, const std::string& name);
+		void set(const std::string& section, const std::string& name, const std::string& value);
 
-	bool has(const std::string& section, const std::string& name);
+		bool remove(const std::string& section, const std::string& name);
 
-private:
-	IniMap mProperties;
-};
+		bool has(const std::string& section, const std::string& name);
+
+	private:
+		IniMap mProperties;
+	};
+
+}
 
 
 #endif //__INI_EDITOR_INIEDITOR_H
