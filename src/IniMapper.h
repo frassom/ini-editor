@@ -3,11 +3,11 @@
 
 #include <map>
 
-#include "IniParser.h"
+#include "Parser.h"
 
 typedef std::map<std::string, std::string> IniMap;
 
-class IniMapper : public IniParser::NewlineCallback {
+class IniMapper : public NewlineCallback {
 public:
 	IniMap from(std::istream& in);
 
@@ -17,8 +17,8 @@ public:
 
 	static std::string getSection(const std::string& key);
 
-protected:
-	void onNewline(const LineType& type, const std::string& section, const std::string& name, const std::string& value,
+	void onNewline(const LineType& type, const std::string& section, const std::string& name,
+				   const std::string& value,
 				   const std::string& raw) override;
 
 private:

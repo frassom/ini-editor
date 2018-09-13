@@ -79,7 +79,7 @@ bool IniEditor::get(const std::string& section, const std::string& name, std::st
 }
 
 void IniEditor::set(const std::string& section, const std::string& name, const std::string& value) {
-	if(section.find(']') == std::string::npos && name.find('=') == std::string::npos)
+	if (section.find(']') == std::string::npos && name.find('=') == std::string::npos)
 		mProperties[IniMapper::makeKey(section, name)] = value;
 	else
 		throw std::runtime_error("Invalid section or name syntax");

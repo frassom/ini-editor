@@ -1,7 +1,7 @@
 #include "IniMapper.h"
 
 IniMap IniMapper::from(std::istream& in) {
-	IniParser::parse(in, *this);
+	parse(in, *this);
 	return std::move(mProperties);
 }
 

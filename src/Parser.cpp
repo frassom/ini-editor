@@ -1,6 +1,7 @@
-#include "IniParser.h"
+#include "Parser.h"
 
-void IniParser::parse(std::istream& in, IniParser::NewlineCallback& callback) {
+
+void parse(std::istream& in, NewlineCallback& callback) {
 
 	int lineNumber = 1;
 
@@ -24,7 +25,7 @@ void IniParser::parse(std::istream& in, IniParser::NewlineCallback& callback) {
 		}
 
 		// Check if eof has been reached
-		if(!in.bad() && in.eof())
+		if (!in.bad() && in.eof())
 			callback.onNewline(LineType::END, "", "", "", "");
 	}
 	catch (ParseException& e) {
@@ -37,7 +38,7 @@ void IniParser::parse(std::istream& in, IniParser::NewlineCallback& callback) {
 		throw std::runtime_error("Error while reading from stream");
 }
 
-IniParser::LineProperties IniParser::parseLine(std::string line) {
+LineProperties parseLine(std::string line) {
 	LineProperties result;
 
 	StringUtils::trim(line);

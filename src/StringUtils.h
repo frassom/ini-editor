@@ -10,4 +10,5 @@ namespace StringUtils {
 	void toLowercase(std::string&);
 }
 
+
 #endif //INI_EDITOR_STRINGUTILS_H

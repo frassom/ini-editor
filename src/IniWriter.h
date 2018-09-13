@@ -3,13 +3,12 @@
 
 #include "IniMapper.h"
 
-class IniWriter : public IniParser::NewlineCallback {
+class IniWriter : public NewlineCallback {
 public:
 	void write(const IniMap& properties, std::ostream& output);
 
 	void write(const IniMap& properties, std::ostream& output, std::istream& source);
 
-protected:
 	void onNewline(const LineType& type, const std::string& section, const std::string& name,
 				   const std::string& value, const std::string& raw) override;
 

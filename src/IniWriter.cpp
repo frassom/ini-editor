@@ -9,7 +9,7 @@ void IniWriter::write(const IniMap& properties, std::ostream& output, std::istre
 
 	mOutputStream = &output;
 
-	IniParser::parse(source, *this);
+	parse(source, *this);
 
 	mOutputStream = nullptr;
 
@@ -37,7 +37,7 @@ void IniWriter::onNewline(const LineType& type, const std::string& section, cons
 	if (mOutputStream != nullptr) {
 		std::ostream& output = *mOutputStream;
 		switch (type) {
-			case LineType::COMMENT:{
+			case LineType::COMMENT: {
 				std::string comment = raw;
 				StringUtils::trim(comment);
 				output << comment << std::endl;
@@ -66,8 +66,8 @@ void IniWriter::onNewline(const LineType& type, const std::string& section, cons
 				auto startIt = it;
 
 				// Check if end not reached and if it has the same prefix
-				if(it != mPendingProperties.end() &&
-				   it->first.compare(0, prefix.size(), prefix) == 0) {
+				if (it != mPendingProperties.end() &&
+					it->first.compare(0, prefix.size(), prefix) == 0) {
 
 					// Write it in the ostream
 					writeProperty(IniMapper::getName(it->first), it->second, output);
@@ -81,13 +81,14 @@ void IniWriter::onNewline(const LineType& type, const std::string& section, cons
 				mLastSection = section;
 
 				// Print out the sec
-				if(type == LineType::SECTION)
+				if (type == LineType::SECTION)
 					writeSection(section, output);
 
 				break;
 			}
 		}
-	} else
+	}
+	else
 		throw std::runtime_error("Null output stream, con't write properties");
 }
 

@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
-#include "../src/IniParser.h"
+#include "../src/Parser.h"
 
-class FakeCallback : public IniParser::NewlineCallback {
+class FakeCallback : public NewlineCallback {
 public:
 	FakeCallback() : type(LineType::COMMENT), timeCalled(0) {}
 
@@ -37,7 +37,7 @@ TEST(IniParserTest, timesCalledCallback) {
 	ss << "\n";
 	ss << "[Section2]\n";
 	ss << "name1=value1\n";
-	IniParser::parse(ss, callback);
+	parse(ss, callback);
 
 	EXPECT_EQ(callback.timeCalled, 7);
 }
@@ -47,7 +47,7 @@ TEST(IniParserTest, rightCallbackArgsForKey) {
 	std::stringstream ss;
 
 	ss << "name = value\n";
-	IniParser::parse(ss, callback);
+	parse(ss, callback);
 
 	EXPECT_EQ(callback.raw, "name = value");
 	EXPECT_EQ(callback.type, LineType::KEY);
@@ -61,7 +61,7 @@ TEST(IniParserTest, rightCallbackArgsForSection) {
 	std::stringstream ss;
 
 	ss << "[SECTION]\n";
-	IniParser::parse(ss, callback);
+	parse(ss, callback);
 
 	EXPECT_EQ(callback.raw, "[SECTION]");
 	EXPECT_EQ(callback.type, LineType::SECTION);
@@ -75,7 +75,7 @@ TEST(IniParserTest, rightCallbackArgsForComment) {
 	std::stringstream ss;
 
 	ss << "# comment\n";
-	IniParser::parse(ss, callback);
+	parse(ss, callback);
 
 	EXPECT_EQ(callback.raw, "# comment");
 	EXPECT_EQ(callback.type, LineType::COMMENT);
@@ -97,7 +97,7 @@ TEST(IniParserTest, badSectionParseThrow) {
 
 	EXPECT_THROW({
 					 try {
-						 IniParser::parse(ss, callback);
+						 parse(ss, callback);
 					 }
 					 catch (const ParseException& e) {
 						 EXPECT_EQ(e.line(), 5);
@@ -119,7 +119,7 @@ TEST(IniParserTest, badKeyParseThrow) {
 
 	EXPECT_THROW({
 					 try {
-						 IniParser::parse(ss, callback);
+						 parse(ss, callback);
 					 }
 					 catch (const ParseException& e) {
 						 EXPECT_EQ(e.line(), 2);
@@ -134,16 +134,16 @@ TEST(IniParserTest, lowercaseSectionAndNameOnParse) {
 
 	ss << "[Section]\n";
 	ss << "NAME = value";
-	IniParser::parse(ss, callback);
+	parse(ss, callback);
 
 	EXPECT_EQ(callback.name, "name");
 	EXPECT_EQ(callback.section, "section");
 }
 
 TEST(IniParserTest, trimLineOnParse) {
-	IniParser::LineProperties prop;
+	LineProperties prop;
 
-	prop = IniParser::parseLine("  \t[ \t section  \t]   ");
+	prop = parseLine("  \t[ \t section  \t]   ");
 
 	EXPECT_EQ(prop.type, LineType::SECTION);
 	EXPECT_EQ(prop.section, "section");
