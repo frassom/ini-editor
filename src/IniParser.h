@@ -15,20 +15,23 @@ enum class LineType {
 
 class IniParser {
 public:
+	struct LineProperties;
 
 	class NewlineCallback;
 
-	struct LineProperties {
-		LineType type;
-
-		std::string section;
-		std::string name;
-		std::string value;
-	};
+	IniParser() = delete;
 
 	static void parse(std::istream& in, NewlineCallback& callback);
 
 	static LineProperties parseLine(std::string line);
+};
+
+struct IniParser::LineProperties {
+	LineType type;
+
+	std::string section;
+	std::string name;
+	std::string value;
 };
 
 class IniParser::NewlineCallback {
