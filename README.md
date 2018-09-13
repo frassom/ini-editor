@@ -1,57 +1,80 @@
 # ini-editor
 
-A simple library to read and write .ini files, written in c++.
+A simple library to read and write ini files. Written in c++.
 
-### Usage example
-```cpp
-#include<IniEditor.h>
+## Features and Ini Style
 
-int main() {
+- line comments can start with `#` or `;`, inline comments are not implemented.
 
-	IniEditor editor;
-	
-	// Parse the content of the file inside IniEditor
-	editor.loadFromFile("path_to_file.ini");
+- a name cannot contain a `=` character, while a section cannot contain a `]` character.
 
-	// Add new keys or edit old ones
-	editor.set("section", "name", "value");
-	
-	// Get keys value
-	std::string value;
-	editor.get("section", "name", value);
-	
-	// ...
-	
-	// Save it in a new file
-	editor.saveToFile("new_file.ini");
-	
-	// Save it adapting to an existing .ini file
-	// adding new keys or altering existing ones
-	// mantaining its structure.
-	editor.saveToFile("new_file.ini", "existing_source.ini")
-	
-	// When you want to overwrite the
-	// existing file just use
-	editor.saveChangesToFile("file.ini");
-	
-	return 0;
-}
+- name and value can only be divided by `=`.
+
+- duplicate key (*same name same section*) won't give errors but only the first value will be kept.
+
+- whitespace around section, name and value are removed.
+
+- key output is in the form `name = value` (with spaces around `=`).
+
+- when saving with a source stream/file comments are preserved.
+
+- programmatically deleted keys are not saved to output, however if the specified source has a key not present in the editor it will be preserved.
+
+## Usage
+
+IniEditor has a simple interface to read and write ini files, otherwise you can use the basic classes to parse, map and write them.
+
+### Examples
+
+- **Load from file**
+
+```c++
+IniEditor editor;
+editor.loadFromFile("path_to_file.ini");
 ```
 
-### INI Style
-- Line comments can start with `#` or `;`,
-	inline comments are not implemented.
+- **Access content**
 
-- A name cannot contain a `=` character, while
-	a section cannot contain a `]` character.
+```c++
+// Set a new key or overwrite an old one
+// if section and name are already present
+editor.set("section", "name", "value");
 
-- Name and value can only be divided by `=`.
+// Get a value
+std::string value = "default";
+if (editor.get("section", "name", value))
+	// Value found. value == "found_value"
+else
+	// Value not found. value == "default"
 
-- If a duplicate key (*same name same section*) is found
-	it will be discarded.
+// Remove a key
+editor.remove("section", "name");
 
-- During parsing whitespaces at the start
-	or end of a line are removed, same thing goes for 
-	the ones between a name, its value and the `=` character.
+// Check if a key exist
+if (editor.has("secition", "name"))
+	// Exist
+else
+	// Do not exist
+```
 
-- Key output is in the form `name = value` (with spaces around `=`).
+- **Save to file**
+
+```c++
+// Save it in a new file
+editor.saveToFile("new_file.ini");
+
+// Save it adapting to an existing .ini file
+// adding new keys or altering existing ones
+// mantaining its structure.
+editor.saveToFile("new_file.ini", "existing_source.ini")
+
+// When you want to overwrite the
+// existing file just use
+editor.saveChangesToFile("file.ini"); // same as editor.saveToFile("file.ini", "file.ini")
+```
+
+
+## Testing
+
+This project uses the GoogleTest framework.
+It is required to have the GTest library installed on your system to run tests as it uses the CMake command `find_package()` to find it.

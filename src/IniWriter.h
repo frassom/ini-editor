@@ -7,7 +7,6 @@ class IniWriter : public IniParser::NewlineCallback {
 public:
 	void write(const IniMap& properties, std::ostream& output);
 
-	// properties even if is passed as non-const reference isn't modified
 	void write(const IniMap& properties, std::ostream& output, std::istream& source);
 
 protected:
