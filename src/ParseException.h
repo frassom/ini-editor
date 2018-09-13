@@ -11,6 +11,8 @@ public:
 
 	int line() const { return mErrorLine; }
 
+	void setLine(int line) { mErrorLine = line; }
+
 private:
 	const char* mErrorMsg;
 	int mErrorLine;

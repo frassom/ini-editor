@@ -27,8 +27,9 @@ void IniParser::parse(std::istream& in, IniParser::NewlineCallback& callback) {
 		if(!in.bad() && in.eof())
 			callback.onNewline(LineType::END, "", "", "", "");
 	}
-	catch (const std::runtime_error& e) {
-		throw ParseException(e.what(), lineNumber);
+	catch (ParseException& e) {
+		e.setLine(lineNumber);
+		throw;
 	}
 
 	// Check for stream errors
@@ -65,7 +66,7 @@ IniParser::LineProperties IniParser::parseLine(std::string line) {
 					break;
 				}
 				else
-					throw std::runtime_error("Invalid section syntax");
+					throw ParseException("Invalid section syntax", -1);
 			}
 			default:
 				auto lastKeyChar = line.find('=');
@@ -83,7 +84,7 @@ IniParser::LineProperties IniParser::parseLine(std::string line) {
 					break;
 				}
 				else
-					throw std::runtime_error("Invalid value syntax: missing '='");
+					throw ParseException("Invalid value syntax: missing '='", -1);
 		}
 	}
 	return result;
