@@ -1,7 +1,8 @@
 #ifndef __INI_EDITOR_PARSER_H
 #define __INI_EDITOR_PARSER_H
 
-#include "iostream"
+#include <iostream>
+#include <functional>
 
 #include "StringUtils.h"
 #include "ParseException.h"
@@ -18,18 +19,14 @@ namespace ini {
 	struct LineProperties {
 		LineType type;
 
+		std::string raw;
+
 		std::string section;
 		std::string name;
 		std::string value;
 	};
 
-	class NewlineCallback {
-	public:
-		virtual void onNewline(const LineType& type, const std::string& section,
-							   const std::string& name, const std::string& value, const std::string& raw) = 0;
-	};
-
-	void parse(std::istream& in, NewlineCallback& callback);
+	void parse(std::istream& in, const std::function<void(const LineProperties&)>& callback);
 
 	LineProperties parseLine(std::string line);
 

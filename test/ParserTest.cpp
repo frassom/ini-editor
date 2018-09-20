@@ -4,33 +4,9 @@
 
 using namespace ini;
 
-class FakeCallback : public NewlineCallback {
-public:
-	FakeCallback() : type(LineType::COMMENT), timeCalled(0) {}
-
-	void onNewline(const LineType& type, const std::string& section, const std::string& name,
-				   const std::string& value, const std::string& raw) override {
-		if(type != LineType::END) {
-			this->type = type;
-			this->section = section;
-			this->name = name;
-			this->value = value;
-			this->raw = raw;
-			timeCalled++;
-		}
-	}
-
-	LineType type;
-	std::string section;
-	std::string name;
-	std::string value;
-	std::string raw;
-	int timeCalled;
-};
-
 TEST(IniParserTest, timesCalledCallback) {
-	FakeCallback callback;
 	std::stringstream ss;
+	int timesCalled = 0;
 
 	ss << "[Section]\n";
 	ss << "name1 = value1\n";
@@ -39,55 +15,65 @@ TEST(IniParserTest, timesCalledCallback) {
 	ss << "\n";
 	ss << "[Section2]\n";
 	ss << "name1=value1\n";
-	parse(ss, callback);
+	parse(ss, [&](const LineProperties& line) {
+		if (line.type != LineType::END)
+			timesCalled++;
+	});
 
-	EXPECT_EQ(callback.timeCalled, 7);
+	EXPECT_EQ(timesCalled, 7);
 }
 
 TEST(IniParserTest, rightCallbackArgsForKey) {
-	FakeCallback callback;
 	std::stringstream ss;
 
 	ss << "name = value\n";
-	parse(ss, callback);
+	parse(ss, [](const LineProperties& line) {
+		if (line.type == LineType::END)
+			return;
 
-	EXPECT_EQ(callback.raw, "name = value");
-	EXPECT_EQ(callback.type, LineType::KEY);
-	EXPECT_EQ(callback.section, "");
-	EXPECT_EQ(callback.name, "name");
-	EXPECT_EQ(callback.value, "value");
+		EXPECT_EQ(line.raw, "name = value");
+		EXPECT_EQ(line.type, LineType::KEY);
+		EXPECT_EQ(line.section, "");
+		EXPECT_EQ(line.name, "name");
+		EXPECT_EQ(line.value, "value");
+	});
+
 }
 
 TEST(IniParserTest, rightCallbackArgsForSection) {
-	FakeCallback callback;
 	std::stringstream ss;
 
 	ss << "[SECTION]\n";
-	parse(ss, callback);
 
-	EXPECT_EQ(callback.raw, "[SECTION]");
-	EXPECT_EQ(callback.type, LineType::SECTION);
-	EXPECT_EQ(callback.section, "section");
-	EXPECT_EQ(callback.name, "");
-	EXPECT_EQ(callback.value, "");
+	parse(ss, [](const LineProperties& line) {
+		if (line.type == LineType::END)
+			return;
+
+		EXPECT_EQ(line.raw, "[SECTION]");
+		EXPECT_EQ(line.type, LineType::SECTION);
+		EXPECT_EQ(line.section, "section");
+		EXPECT_EQ(line.name, "");
+		EXPECT_EQ(line.value, "");
+	});
 }
 
 TEST(IniParserTest, rightCallbackArgsForComment) {
-	FakeCallback callback;
 	std::stringstream ss;
 
 	ss << "# comment\n";
-	parse(ss, callback);
+	parse(ss, [](const LineProperties& line) {
+		if (line.type == LineType::END)
+			return;
 
-	EXPECT_EQ(callback.raw, "# comment");
-	EXPECT_EQ(callback.type, LineType::COMMENT);
-	EXPECT_EQ(callback.section, "");
-	EXPECT_EQ(callback.name, "");
-	EXPECT_EQ(callback.value, "");
+		EXPECT_EQ(line.raw, "# comment");
+		EXPECT_EQ(line.type, LineType::COMMENT);
+		EXPECT_EQ(line.section, "");
+		EXPECT_EQ(line.name, "");
+		EXPECT_EQ(line.value, "");
+	});
 }
 
 TEST(IniParserTest, badSectionParseThrow) {
-	FakeCallback callback;
 	std::stringstream ss;
 
 	ss << "[Section]\n";
@@ -99,7 +85,7 @@ TEST(IniParserTest, badSectionParseThrow) {
 
 	EXPECT_THROW({
 					 try {
-						 parse(ss, callback);
+						 parse(ss, [](...) {});
 					 }
 					 catch (const ParseException& e) {
 						 EXPECT_EQ(e.line(), 5);
@@ -109,7 +95,6 @@ TEST(IniParserTest, badSectionParseThrow) {
 }
 
 TEST(IniParserTest, badKeyParseThrow) {
-	FakeCallback callback;
 	std::stringstream ss;
 
 	ss << "[Section]\n";
@@ -121,7 +106,7 @@ TEST(IniParserTest, badKeyParseThrow) {
 
 	EXPECT_THROW({
 					 try {
-						 parse(ss, callback);
+						 parse(ss, [](...) {});
 					 }
 					 catch (const ParseException& e) {
 						 EXPECT_EQ(e.line(), 2);
@@ -131,15 +116,17 @@ TEST(IniParserTest, badKeyParseThrow) {
 }
 
 TEST(IniParserTest, lowercaseSectionAndNameOnParse) {
-	FakeCallback callback;
 	std::stringstream ss;
 
 	ss << "[Section]\n";
 	ss << "NAME = value";
-	parse(ss, callback);
 
-	EXPECT_EQ(callback.name, "name");
-	EXPECT_EQ(callback.section, "section");
+	parse(ss, [](const LineProperties& line) {
+		if (line.type == LineType::KEY) {
+			EXPECT_EQ(line.name, "name");
+			EXPECT_EQ(line.section, "section");
+		}
+	});
 }
 
 TEST(IniParserTest, trimLineOnParse) {
@@ -149,4 +136,5 @@ TEST(IniParserTest, trimLineOnParse) {
 
 	EXPECT_EQ(prop.type, LineType::SECTION);
 	EXPECT_EQ(prop.section, "section");
+	EXPECT_EQ(prop.raw, "[ \t section  \t]");
 }

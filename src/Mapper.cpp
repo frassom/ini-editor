@@ -3,15 +3,17 @@
 namespace ini {
 
 	IniMap Mapper::from(std::istream& in) {
-		parse(in, *this);
-		return std::move(mProperties);
-	}
+		std::map<std::string, std::string> properties;
 
-	void Mapper::onNewline(const LineType& type, const std::string& section,
-						   const std::string& name, const std::string& value, const std::string&) {
-		if (type == LineType::KEY) {
-			mProperties.insert(std::make_pair(makeKey(section, name), value));
-		}
+		parse(in, [&](const LineProperties& line) {
+
+			if (line.type == LineType::KEY) {
+				properties.insert(std::make_pair(makeKey(line.section, line.name), line.value));
+			}
+
+		});
+
+		return properties;
 	}
 
 	std::string Mapper::makeKey(const std::string& section, const std::string& name) {

@@ -2,7 +2,7 @@
 
 namespace ini {
 
-	void parse(std::istream& in, NewlineCallback& callback) {
+	void parse(std::istream& in, const std::function<void(const LineProperties&)>& callback) {
 
 		int lineNumber = 1;
 
@@ -13,21 +13,27 @@ namespace ini {
 
 			while (std::getline(in, line)) {
 
-				LineProperties lineProp = parseLine(line);
+				LineProperties lineProperties = parseLine(line);
 
-				if (lineProp.type == LineType::SECTION) {
-					currentSection = lineProp.section;
-				}
+				if (lineProperties.type == LineType::SECTION)
+					currentSection = lineProperties.section;
 
-				callback.onNewline(lineProp.type, lineProp.type != LineType::COMMENT ? currentSection : "",
-								   lineProp.name, lineProp.value, line);
+				if (lineProperties.type == LineType::KEY)
+					lineProperties.section = currentSection;
+
+				callback(lineProperties);
 
 				lineNumber++;
 			}
 
 			// Check if eof has been reached
-			if (!in.bad() && in.eof())
-				callback.onNewline(LineType::END, "", "", "", "");
+			if (!in.bad() && in.eof()) {
+				LineProperties lineProperties;
+				lineProperties.type = LineType::END;
+
+				callback(lineProperties);
+			}
+
 		}
 		catch (ParseException& e) {
 			e.setLine(lineNumber);
@@ -43,6 +49,7 @@ namespace ini {
 		LineProperties result;
 
 		StringUtils::trim(line);
+
 		if (line.empty()) {
 			result.type = LineType::COMMENT;    // Empty line are treated as comments
 		}
@@ -89,6 +96,8 @@ namespace ini {
 						throw ParseException("Invalid value syntax: missing '='", -1);
 			}
 		}
+		result.raw = std::move(line);
+
 		return result;
 	}
 

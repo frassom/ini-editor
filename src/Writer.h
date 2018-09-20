@@ -5,14 +5,11 @@
 
 namespace ini {
 
-	class Writer : public NewlineCallback {
+	class Writer {
 	public:
 		void write(const IniMap& properties, std::ostream& output);
 
 		void write(const IniMap& properties, std::ostream& output, std::istream& source);
-
-		void onNewline(const LineType& type, const std::string& section, const std::string& name,
-					   const std::string& value, const std::string& raw) override;
 
 	private:
 		void writePropertiesToStream(const IniMap& properties, std::ostream& output);
@@ -20,13 +17,6 @@ namespace ini {
 		void writeProperty(const std::string& name, const std::string& value, std::ostream& output);
 
 		void writeSection(const std::string& section, std::ostream& output);
-
-	private:
-		std::ostream* mOutputStream = nullptr;
-
-		IniMap mPendingProperties;
-
-		std::string mLastSection;
 	};
 
 }
