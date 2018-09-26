@@ -1,4 +1,7 @@
 /.idea/
+/.vscode/
+/compile_command.json
 /cmake-build-*/
+/build/
 /*.cpp
 /*.ini
