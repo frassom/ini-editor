@@ -20,7 +20,6 @@ namespace ini {
 		int mErrorLine;
 	};
 
-}
+}	// namespace ini
 
-
-#endif //INI_EDITOR_PARSEEXCEPTION_H
+#endif	// INI_EDITOR_PARSEEXCEPTION_H

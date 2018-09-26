@@ -22,14 +22,14 @@ A simple library to read and write ini files. Written in c++.
 
 ## Usage
 
-IniEditor has a simple interface to read and write ini files, otherwise you can use the basic classes to parse, map and write them.
+Use ini::Editor to load and save ini files.
 
 ### Examples
 
 - **Load from file**
 
 ```c++
-IniEditor editor;
+ini::Editor editor;
 editor.loadFromFile("path_to_file.ini");
 ```
 
@@ -78,3 +78,8 @@ editor.saveChangesToFile("file.ini"); // same as editor.saveToFile("file.ini", "
 
 This project uses the GoogleTest framework.
 It is required to have the GTest library installed on your system to run tests as it uses the CMake command `find_package()` to find it.
+
+
+## Note
+
+This is a university project made for an exam.
