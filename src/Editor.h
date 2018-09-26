@@ -2,12 +2,15 @@
 #define __INI_EDITOR_INIEDITOR_H
 
 #include <fstream>
+#include <map>
 
-#include "Writer.h"
+#include "Parser.h"
 
 namespace ini {
 
-	class IniEditor {
+	typedef std::map<std::string, std::string> IniMap;
+
+	class Editor {
 	public:
 		void loadFromFile(const std::string& filename);
 
@@ -17,9 +20,9 @@ namespace ini {
 
 		void saveToFile(const std::string& outputFilename, const std::string& sourceFilename = "");
 
-		void saveToStream(std::ostream& output);
+		void saveToStream(std::ostream& out);
 
-		void saveToStream(std::ostream& output, std::istream& source);
+		void saveToStream(std::ostream& out, std::istream& source);
 
 		bool get(const std::string& section, const std::string& name, std::string& value);
 
@@ -29,11 +32,23 @@ namespace ini {
 
 		bool has(const std::string& section, const std::string& name);
 
+		static std::string makeKey(const std::string& section, const std::string& name);
+
+		static std::string getName(const std::string& key);
+
+		static std::string getSection(const std::string& key);
+
+	private:
+		void writePropertiesToStream(const IniMap& properties, std::ostream& out);
+
+		void writeProperty(const std::string& name, const std::string& value, std::ostream& out);
+
+		void writeSection(const std::string& section, std::ostream& out);
+
 	private:
 		IniMap mProperties;
 	};
 
-}
+}	// namespace ini
 
-
-#endif //__INI_EDITOR_INIEDITOR_H
+#endif	//__INI_EDITOR_INIEDITOR_H
