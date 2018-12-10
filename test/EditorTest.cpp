@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "../src/Editor.h"
+#include "Editor.h"
 
 using namespace ini;
 

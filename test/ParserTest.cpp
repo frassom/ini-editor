@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "../src/parser.h"
+#include "parser.h"
 
 using namespace ini;
 
