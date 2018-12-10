@@ -1,10 +1,10 @@
-#ifndef __INI_EDITOR_INIEDITOR_H
-#define __INI_EDITOR_INIEDITOR_H
+#ifndef EDITOR__H
+#define EDITOR__H
 
 #include <fstream>
 #include <map>
 
-#include "Parser.h"
+#include "parser.h"
 
 namespace ini {
 
@@ -41,7 +41,8 @@ namespace ini {
 	private:
 		void writePropertiesToStream(const IniMap& properties, std::ostream& out);
 
-		void writeProperty(const std::string& name, const std::string& value, std::ostream& out);
+		void writeProperty(const std::string& name, const std::string& value,
+						   const std::string& inlineComment, std::ostream& out);
 
 		void writeSection(const std::string& section, std::ostream& out);
 
@@ -51,4 +52,4 @@ namespace ini {
 
 }	// namespace ini
 
-#endif	//__INI_EDITOR_INIEDITOR_H
+#endif

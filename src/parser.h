@@ -1,36 +1,29 @@
-#ifndef __INI_EDITOR_PARSER_H
-#define __INI_EDITOR_PARSER_H
+#ifndef PARSER__H
+#define PARSER__H
 
-#include <iostream>
 #include <functional>
+#include <iostream>
 
-#include "StringUtils.h"
 #include "ParseException.h"
+#include "stringUtils.h"
 
 namespace ini {
 
-	enum class LineType {
-		COMMENT,
-		SECTION,
-		KEY,
-		END
-	};
+	enum class LineType { EMPTY, COMMENT, SECTION, KEY, END };
 
 	struct LineProperties {
 		LineType type;
 
-		std::string raw;
-
 		std::string section;
 		std::string name;
 		std::string value;
+		std::string comment;
 	};
 
 	void parse(std::istream& in, const std::function<void(const LineProperties&)>& callback);
 
 	LineProperties parseLine(std::string line);
 
-}
+}	// namespace ini
 
-
-#endif //__INI_EDITOR_PARSER_H
+#endif

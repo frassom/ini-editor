@@ -1,10 +1,10 @@
 #include <gtest/gtest.h>
 
-#include "../src/Parser.h"
+#include "../src/parser.h"
 
 using namespace ini;
 
-TEST(IniParserTest, timesCalledCallback) {
+TEST(ParserTest, timesCalledCallback) {
 	std::stringstream ss;
 	int timesCalled = 0;
 
@@ -19,28 +19,26 @@ TEST(IniParserTest, timesCalledCallback) {
 		if (line.type != LineType::END)
 			timesCalled++;
 	});
-
 	EXPECT_EQ(timesCalled, 7);
 }
 
-TEST(IniParserTest, rightCallbackArgsForKey) {
+TEST(ParserTest, rightCallbackArgsForKey) {
 	std::stringstream ss;
 
-	ss << "name = value\n";
+	ss << "name = value\t; comment\n";
 	parse(ss, [](const LineProperties& line) {
 		if (line.type == LineType::END)
 			return;
 
-		EXPECT_EQ(line.raw, "name = value");
 		EXPECT_EQ(line.type, LineType::KEY);
 		EXPECT_EQ(line.section, "");
 		EXPECT_EQ(line.name, "name");
 		EXPECT_EQ(line.value, "value");
+		EXPECT_EQ(line.comment, "comment");
 	});
-
 }
 
-TEST(IniParserTest, rightCallbackArgsForSection) {
+TEST(ParserTest, rightCallbackArgsForSection) {
 	std::stringstream ss;
 
 	ss << "[SECTION]\n";
@@ -49,15 +47,15 @@ TEST(IniParserTest, rightCallbackArgsForSection) {
 		if (line.type == LineType::END)
 			return;
 
-		EXPECT_EQ(line.raw, "[SECTION]");
 		EXPECT_EQ(line.type, LineType::SECTION);
 		EXPECT_EQ(line.section, "section");
 		EXPECT_EQ(line.name, "");
 		EXPECT_EQ(line.value, "");
+		EXPECT_EQ(line.comment, "");
 	});
 }
 
-TEST(IniParserTest, rightCallbackArgsForComment) {
+TEST(ParserTest, rightCallbackArgsForComment) {
 	std::stringstream ss;
 
 	ss << "# comment\n";
@@ -65,57 +63,59 @@ TEST(IniParserTest, rightCallbackArgsForComment) {
 		if (line.type == LineType::END)
 			return;
 
-		EXPECT_EQ(line.raw, "# comment");
 		EXPECT_EQ(line.type, LineType::COMMENT);
+		EXPECT_EQ(line.comment, "comment");
 		EXPECT_EQ(line.section, "");
 		EXPECT_EQ(line.name, "");
 		EXPECT_EQ(line.value, "");
 	});
 }
 
-TEST(IniParserTest, badSectionParseThrow) {
+TEST(ParserTest, badSectionParseThrow) {
 	std::stringstream ss;
 
 	ss << "[Section]\n";
 	ss << "name = value\n";
 	ss << "# comment\n";
 	ss << " \t   trim\t =  this \t\t\n";
-	ss << "  [Sectio]n2 \n";                // ERROR
+	ss << "  [Sectio]n2 \n";	// ERROR
 	ss << "name2=value2\n";
 
-	EXPECT_THROW({
-					 try {
-						 parse(ss, [](...) {});
-					 }
-					 catch (const ParseException& e) {
-						 EXPECT_EQ(e.line(), 5);
-						 throw;
-					 }
-				 }, ParseException);
+	EXPECT_THROW(
+		{
+			try {
+				parse(ss, [](...) {});
+			} catch (const ParseException& e) {
+				EXPECT_EQ(e.line(), 5);
+				throw;
+			}
+		},
+		ParseException);
 }
 
-TEST(IniParserTest, badKeyParseThrow) {
+TEST(ParserTest, badKeyParseThrow) {
 	std::stringstream ss;
 
 	ss << "[Section]\n";
-	ss << "name value\n";
+	ss << "name value\n";	// ERROR
 	ss << "# comment\n";
 	ss << " \t   trim\t =  this \t\t\n";
-	ss << "  [Section2] \n";                // ERROR
+	ss << "  [Section2] \n";
 	ss << "name2=value2\n";
 
-	EXPECT_THROW({
-					 try {
-						 parse(ss, [](...) {});
-					 }
-					 catch (const ParseException& e) {
-						 EXPECT_EQ(e.line(), 2);
-						 throw;
-					 }
-				 }, ParseException);
+	EXPECT_THROW(
+		{
+			try {
+				parse(ss, [](...) {});
+			} catch (const ParseException& e) {
+				EXPECT_EQ(e.line(), 2);
+				throw;
+			}
+		},
+		ParseException);
 }
 
-TEST(IniParserTest, lowercaseSectionAndNameOnParse) {
+TEST(ParserTest, lowercaseSectionAndNameOnParse) {
 	std::stringstream ss;
 
 	ss << "[Section]\n";
@@ -129,12 +129,13 @@ TEST(IniParserTest, lowercaseSectionAndNameOnParse) {
 	});
 }
 
-TEST(IniParserTest, trimLineOnParse) {
-	LineProperties prop;
+TEST(ParserTest, trimLineOnParse) {
+	LineProperties line;
 
-	prop = parseLine("  \t[ \t section  \t]   ");
+	line = parseLine("  \tname   = value  \t  ; \t  comment\t   ");
 
-	EXPECT_EQ(prop.type, LineType::SECTION);
-	EXPECT_EQ(prop.section, "section");
-	EXPECT_EQ(prop.raw, "[ \t section  \t]");
+	EXPECT_EQ(line.type, LineType::KEY);
+	EXPECT_EQ(line.name, "name");
+	EXPECT_EQ(line.value, "value");
+	EXPECT_EQ(line.comment, "comment");
 }

@@ -1,4 +1,4 @@
-#include "Parser.h"
+#include "parser.h"
 
 namespace ini {
 
@@ -34,8 +34,7 @@ namespace ini {
 				callback(lineProperties);
 			}
 
-		}
-		catch (ParseException& e) {
+		} catch (ParseException& e) {
 			e.setLine(lineNumber);
 			throw;
 		}
@@ -48,57 +47,67 @@ namespace ini {
 	LineProperties parseLine(std::string line) {
 		LineProperties result;
 
-		StringUtils::trim(line);
+		StringUtils::trimLeft(line);
 
 		if (line.empty()) {
-			result.type = LineType::COMMENT;    // Empty line are treated as comments
-		}
-		else {
+			result.type = LineType::EMPTY;
+		} else {
 			switch (line.at(0)) {
 				case '#':
-				case ';':
+				case ';': {
 					result.type = LineType::COMMENT;
 
+					result.comment = line.substr(1);
+					StringUtils::trim(result.comment);
+
 					break;
+				}
 				case '[': {
-					// New section found
+					StringUtils::trimRight(line);
+
 					auto lastChar = line.find(']');
 					if (lastChar == line.size() - 1) {
-						result.section = line.substr(1, lastChar - 1);
+						result.type = LineType::SECTION;
 
-						// Trim and lowercase the section
+						result.section = line.substr(1, lastChar - 1);
 						StringUtils::trim(result.section);
 						StringUtils::toLowercase(result.section);
 
-						result.type = LineType::SECTION;
-
 						break;
-					}
-					else
-						throw ParseException("Invalid section syntax", -1);
+					} else
+						throw ParseException("Invalid section syntax: missing ']' at the end", -1);
 				}
-				default:
+				default: {
 					auto lastKeyChar = line.find('=');
 					if (lastKeyChar < line.size()) {
+						result.type = LineType::KEY;
 
 						result.name = line.substr(0, lastKeyChar);
 						StringUtils::toLowercase(result.name);
-						StringUtils::trim(result.name);
+						StringUtils::trimRight(result.name);
 
-						result.value = line.substr(lastKeyChar + 1, line.size() - 1);
+						// Search for inline comment
+						auto commentStart = line.find(';', lastKeyChar + 1);
+						commentStart = std::min(commentStart, line.find('#', lastKeyChar + 1));
+
+						if (commentStart < line.size()) {
+							result.value = line.substr(lastKeyChar + 1, commentStart - lastKeyChar - 1);
+
+							result.comment = line.substr(commentStart + 1);
+							StringUtils::trim(result.comment);
+						} else {
+							result.value = line.substr(lastKeyChar + 1);
+						}
 						StringUtils::trim(result.value);
 
-						result.type = LineType::KEY;
-
 						break;
-					}
-					else
+					} else
 						throw ParseException("Invalid value syntax: missing '='", -1);
+				}
 			}
 		}
-		result.raw = std::move(line);
 
 		return result;
 	}
 
-}
+}	// namespace ini

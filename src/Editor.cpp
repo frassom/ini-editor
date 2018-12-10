@@ -24,30 +24,33 @@ namespace ini {
 		saveToFile(outputFile, outputFile);
 	}
 
-	void Editor::saveToFile(const std::string& outputFilename, const std::string& sourceFilename) {
+	void Editor::saveToFile(const std::string& outputFilename, const std::string& srcFilename) {
 
 		// Prevent writeToFile("","") call
-		if (outputFilename.empty()) throw std::runtime_error("Invalid empty out filename");
+		if (outputFilename.empty())
+			throw std::runtime_error("Invalid empty out filename");
 
-		bool isSameFile = outputFilename == sourceFilename;
+		bool isSameFile = outputFilename == srcFilename;
 
-		// Open a different out file if sourceFilename and outputFilename are the same,
-		// cannot read and write to the same file concurrently
+		// Open a different out file if srcFilename and outputFilename are
+		// the same, cannot read and write to the same file concurrently
 		std::ofstream out;
 		if (isSameFile)
 			out.open("tmp");
 		else
 			out.open(outputFilename);
 
-		if (!out.is_open()) throw std::runtime_error("Could not open out file");
+		if (!out.is_open())
+			throw std::runtime_error("Could not open out file");
 
 		// Write to the ofstream using or not a source file
-		if (!sourceFilename.empty()) {
+		if (!srcFilename.empty()) {
 
 			// Open the input file
-			std::ifstream source(sourceFilename);
+			std::ifstream source(srcFilename);
 
-			if (!source.is_open()) throw std::runtime_error("Could not open source file");
+			if (!source.is_open())
+				throw std::runtime_error("Could not open source file");
 
 			saveToStream(out, source);
 		} else
@@ -71,9 +74,7 @@ namespace ini {
 		parse(source, [&](const LineProperties& line) {
 			switch (line.type) {
 				case LineType::COMMENT: {
-					std::string comment = line.raw;
-					StringUtils::trim(comment);
-					out << comment << std::endl;
+					out << "# " << line.comment << "\n";
 
 					break;
 				}
@@ -81,12 +82,12 @@ namespace ini {
 					auto it = pendingProperties.find(makeKey(line.section, line.name));
 					if (it != pendingProperties.end()) {
 
-						writeProperty(line.name, it->second, out);
+						writeProperty(line.name, it->second, line.comment, out);
 
 						// No more pending, remove
 						pendingProperties.erase(it);
 					} else
-						writeProperty(line.name, line.value, out);
+						writeProperty(line.name, line.value, line.comment, out);
 
 					break;
 				}
@@ -94,15 +95,15 @@ namespace ini {
 				case LineType::SECTION: {
 
 					std::string prefix = lastSection + ']';
-					auto it			   = pendingProperties.lower_bound(prefix);
-					auto startIt	   = it;
+					auto it = pendingProperties.lower_bound(prefix);
+					auto startIt = it;
 
 					// Check if end not reached and if it has the same prefix
 					if (it != pendingProperties.end() &&
 						it->first.compare(0, prefix.size(), prefix) == 0) {
 
 						// Write it in the ostream
-						writeProperty(getName(it->first), it->second, out);
+						writeProperty(getName(it->first), it->second, {}, out);
 
 						it++;
 					}
@@ -112,9 +113,14 @@ namespace ini {
 
 					lastSection = line.section;
 
-					// Print out the sec
-					if (line.type == LineType::SECTION) writeSection(line.section, out);
+					// Print out section
+					if (line.type == LineType::SECTION)
+						writeSection(line.section, out);
 
+					break;
+				}
+				case LineType::EMPTY: {
+					out << "\n";
 					break;
 				}
 			}
@@ -171,12 +177,18 @@ namespace ini {
 				writeSection(currentSection, out);
 			}
 
-			writeProperty(getName(item.first), item.second, out);
+			writeProperty(getName(item.first), item.second, {}, out);
 		}
 	}
 
-	void Editor::writeProperty(const std::string& name, const std::string& value, std::ostream& out) {
-		out << name << " = " << value << '\n';
+	void Editor::writeProperty(const std::string& name, const std::string& value,
+							   const std::string& inlineComment, std::ostream& out) {
+		out << name << " = " << value;
+
+		if (!inlineComment.empty())
+			out << "\t# " << inlineComment;
+
+		out << '\n';
 	}
 
 	void Editor::writeSection(const std::string& section, std::ostream& out) {
