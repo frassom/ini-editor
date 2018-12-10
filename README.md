@@ -4,7 +4,7 @@ A simple library to read and write ini files. Written in c++.
 
 ## Features and Ini Style
 
-- line comments can start with `#` or `;`, inline comments are not implemented.
+- line comments can start with `#` or `;`.
 
 - a name cannot contain a `=` character, while a section cannot contain a `]` character.
 
